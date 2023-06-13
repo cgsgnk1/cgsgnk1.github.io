@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <head>
+        <meta charset="utf-8" />
+        <title>
+            NK1's Mandelbrot & Julia
+        </title>
+    </head>
+    <body bgcolor="#834d18">
+        <script type="text/javascript" src="main.js"></script>
+        <script type="text/javascript">
+            window.addEventListener("load", () => {
+                document.body.onkeydown = 
+                    function(event)
+                    {
+                        if (event.code == "ArrowUp") {
+                            // document.bgColor = "#834d18";
+                            // window.zoom /= 2;
+                            window.deltaY -= 100 / window.zoom;
+                        }
+                        if (event.code == "ArrowDown") {
+                            // document.bgColor = "#334ddd";
+                            // window.zoom *= 2;
+                            window.deltaY += 100 / window.zoom;
+                        }
+                        if (event.code == "ArrowRight") {
+                            window.deltaX -= 100.0 / window.zoom;
+                        }
+                        if (event.code == "ArrowLeft") {
+                            window.deltaX += 100.0 / window.zoom;
+                        }
+                        if (event.code == "Equal") {
+                            if (window.zoom < 0.2)
+                                window.zoom -= 0.02;
+                            else
+                                window.zoom -= 0.1;
+                        }
+                        if (event.code == "Minus") {
+                            window.zoom += 0.1;
+                        }
+                    }
+                initGL();
+            });
+        </script>
+
+        <div>
+            <table border="1">
+                <tr>
+                    <th colspan=5>Mandelbrot/Julia UI control</th>
+                </tr>
+                <tr>
+                    <td>Color picker</td><td>Pause checkbox</td><td>Zoom slider (deltaX, deltaY: arrows)</td><td>Brightness</td><td>Amplitude</td>
+                </tr>
+                </tr>
+                <tr>
+                    <td>
+                        <input onchange="colorHandle()" type="color" id="frColor" value="#834d18" />   
+                    </td>
+                    <td>
+                        <input onclick="pauseHandle()" type="checkbox" id="pauseCheckbox" value="false" />
+                    </td>
+                    <td>
+                        <input onchange="zoomHandle()" type="range" id="zoomSlider" min="0.01" max="20.0" step="0.01" value="0.5"/>
+                    </td>
+                    <td>
+                        <input onchange="brightnessHandle()" type="range" id="brightnessSlider" min="0.5" max="20.0" step="0.1" value="1"/>
+                    </td>
+                    <td>
+                        <input onchange="amplitudeHandle()" type="range" id="amplitudeSlider" min="0.2" max="10.0" step="0.1" value="1"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <canvas id="glCanvas" width="1000px" height="1000px"></canvas>
+
+        <div>
+            Test <b>Test</b> Test
+            <h1>TEST 222222</h1>
+            <h2>eoroproper</h2>
+        </div>
+    </body>
+</html>

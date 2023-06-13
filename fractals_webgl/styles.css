@@ -1,0 +1,13 @@
+table {
+    background-color: #e9d2af;
+    border: 4px solid black;
+    border-collapse: collapse;
+    border-style: ridge;
+    font-family: "Wide Latin";
+    width: 75%;
+    text-align: center;
+}
+
+th {
+    background-color: rgb(129, 235, 29);
+}
