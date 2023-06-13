@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <head>
+        <title>nkgl2</title>
+    </head>
+    <body>
+        <script>
+            function handle(obj) {
+                if (obj == "axis") {
+                    window.axis = !window.axis;
+                }
+                else if (obj == "grid") {
+                    window.grid = !window.grid;
+                }
+                else if (obj == "cow") {
+                    window.cow = !window.cow;
+                }
+                else {
+                    window.currentFigure = obj;
+                }
+            }
+        </script>
+        <table border="1">
+            <tr>
+                <th>Tetra</th><th>Hexa</th><th>Octa</th><th></th><th>Random</th><th>Axis</th>
+                <th>Grid</th><th>Cow</th>
+            </tr>
+            <tr>
+                <td>
+                    <input type="radio" onchange="handle('tetra')" name="platon" checked />
+                </td>
+
+                <td>
+                    <input type="radio" onchange="handle('hexa')" name="platon" />
+                </td>
+
+                <td>
+                    <input type="radio" onchange="handle('octa')" name="platon" />
+                </td>
+
+                <td>
+                </td>
+                <td>
+                    <input type="radio" onchange="handle('random')" name="platon" />
+                </td>
+                <td>
+                    <input type="checkbox" onchange="handle('axis')" name="axis" />
+                </td>
+                <td>
+                    <input type="checkbox" onchange="handle('grid')" name="grid" />
+                </td>
+                <td>
+                    <input type="checkbox" onchange="handle('cow')" name="cow" />
+                </td>
+            </tr>
+        </table>
+        <canvas id="glCanvas" width="500px" height="500px"></canvas>
+        <script type="module">
+            import { initGL } from "./render.js";
+            
+            window.addEventListener("load", () => {
+                window.currentFigure = "tetra";
+                window.axis = window.grid = window.cow = false;
+                initGL("glCanvas");
+            });
+        </script>
+    </body>
+</html>
