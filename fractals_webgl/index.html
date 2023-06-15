@@ -11,73 +11,94 @@
         <script type="text/javascript" src="main.js"></script>
         <script type="text/javascript">
             window.addEventListener("load", () => {
-                document.body.onkeydown = 
-                    function(event)
-                    {
-                        if (event.code == "ArrowUp") {
-                            // document.bgColor = "#834d18";
-                            // window.zoom /= 2;
-                            window.deltaY -= 100 / window.zoom;
-                        }
-                        if (event.code == "ArrowDown") {
-                            // document.bgColor = "#334ddd";
-                            // window.zoom *= 2;
-                            window.deltaY += 100 / window.zoom;
-                        }
-                        if (event.code == "ArrowRight") {
-                            window.deltaX -= 100.0 / window.zoom;
-                        }
-                        if (event.code == "ArrowLeft") {
-                            window.deltaX += 100.0 / window.zoom;
-                        }
-                        if (event.code == "Equal") {
-                            if (window.zoom < 0.2)
-                                window.zoom -= 0.02;
-                            else
-                                window.zoom -= 0.1;
-                        }
-                        if (event.code == "Minus") {
-                            window.zoom += 0.1;
-                        }
-                    }
                 initGL();
             });
+            window.isHold = false;
+            window.center = {
+                x: 0,
+                y: 0,
+            };
+
+            window.addEventListener("keydown", (event) => {
+                window.currentKey = event.key;
+            })
+            window.addEventListener("keyup", (event) => {
+                window.currentKey = undefined;
+            })
+
+            window.addEventListener("mousedown", (event) => {
+                if (event.clientX < 800 && event.clientY > 120) {
+                    window.isHold = true;
+                }
+            });
+            window.addEventListener("mouseup", (event) => {
+                if (true || event.clientX < 800 && event.clientY > 120) {
+                    window.isHold = false;
+                }
+            });
+            window.addEventListener("mousemove", (event) => {
+                if (window.isHold) {
+                    window.mouse.dx += event.movementX;
+                    window.mouse.dy += event.movementY;
+
+                    window.center.x += event.movementX * window.zoom;
+                    window.center.y += event.movementY * window.zoom;
+                }
+            });
+            window.addEventListener("wheel", (event) => {
+                let mul = 1.0;
+
+                if (window.currentKey == "Shift") {
+                    mul *= 10;
+                }
+                window.zoom += event.deltaY / 5000.0 * window.zoom * mul;
+
+                // console.log(window.mouse.dx, window.zoom);
+                window.mouse.dx = window.center.x / window.zoom;
+                window.mouse.dy = window.center.y / window.zoom;
+            });
         </script>
-        
-        <div>
-            <a href="../index.html">Back</a>
-        </div>
-        
+
         <div>
             <table border="1">
                 <tr>
-                    <th colspan=5>Mandelbrot/Julia UI control</th>
+                    <th colspan=5>Mandelbrot/Julia UI control (zoom to center of canvas, press Shift to zoom faster)</th>
                 </tr>
                 <tr>
-                    <td>Color picker</td><td>Pause checkbox</td><td>Zoom slider (deltaX, deltaY: arrows)</td><td>Brightness</td><td>Amplitude</td>
+                    <td>Fractal</td>
+                    <td>Color picker</td><td>Pause checkbox</td><td>Brightness</td><td>Speed</td>
                 </tr>
                 </tr>
                 <tr>
-                    <td>
-                        <input onchange="colorHandle()" type="color" id="frColor" value="#834d18" />   
+                    <td align="center">
+                        <table border="1">
+                            <tr>
+                                <th>Mandelbrot</th><th>Julia</th>
+                            </tr>
+                            <tr>
+                                <td><input type="radio" onchange="typeHandle()" name="type" checked /></td>
+                                <td><input type="radio" onchange="typeHandle()" name="type" /></td>
+                            </tr>
+                        </table>
                     </td>
                     <td>
-                        <input onclick="pauseHandle()" type="checkbox" id="pauseCheckbox" value="false" />
+                        <input type="color" id="frColor" value="#834d18" />   
                     </td>
                     <td>
-                        <input onchange="zoomHandle()" type="range" id="zoomSlider" min="0.01" max="20.0" step="0.01" value="0.5"/>
+                        <input onchange="pauseHandle()" type="checkbox" id="pauseCheckbox" value="false" />
                     </td>
                     <td>
-                        <input onchange="brightnessHandle()" type="range" id="brightnessSlider" min="0.5" max="20.0" step="0.1" value="1"/>
+                        <input type="range" id="brightnessSlider" min="0.5" max="20.0" step="0.1" value="1"/>
                     </td>
                     <td>
-                        <input onchange="amplitudeHandle()" type="range" id="amplitudeSlider" min="0.2" max="10.0" step="0.1" value="1"/>
+                        <input type="range" id="speedSlider" min="0.2" max="10.0" step="0.1" value="1"/>
                     </td>
                 </tr>
             </table>
+            <input type="button" onclick="buttonHandle()" id="reset" value="Reset" />
         </div>
 
-        <canvas id="glCanvas" width="1000px" height="1000px"></canvas>
+        <canvas id="glCanvas" width="800px" height="800px"></canvas>
 
         <div>
             Test <b>Test</b> Test
