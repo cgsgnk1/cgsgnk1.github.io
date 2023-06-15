@@ -3,13 +3,13 @@ function func() {
 }
 
 function pauseHandle() {
-    if (document.getElementById("pauseCheckbox") != "false") {
-        window.startPauseTime = Date.now(); 
+    window.pause = !window.pause;
+    if (window.pause) {
+        window.startPauseTime = Date.now();   
     }
     else {
         window.deltaPauseTime += Date.now() - window.startPauseTime;
     }
-    window.pause = !window.pause;
 }
 
 function colorHandle() {
@@ -20,16 +20,22 @@ function colorHandle() {
     window.frColorB = eval("0x" + color[5] + color[6]) / 255.0;
 }
 
-function zoomHandle() {
-    window.zoom = 1 / document.getElementById("zoomSlider").value;
-}
-
 function brightnessHandle() {
     window.brightness = document.getElementById("brightnessSlider").value;
 }
 
-function amplitudeHandle() {
-    window.amplitude = document.getElementById("amplitudeSlider").value;
+function speedHandle() {
+    window.speed = document.getElementById("speedSlider").value;
+}
+
+function typeHandle() {
+    window.isMndl = !window.isMndl;
+}
+
+function buttonHandle() {
+    window.zoom = 1.0;
+    window.mouse.dx = window.mouse.dy = 0;
+    window.center.x = window.center.y = 0;
 }
 
 function loadShader(gl, type, source) {
@@ -46,16 +52,24 @@ function loadShader(gl, type, source) {
 }
 
 function initGL() {
-    window.zoom = 2.0;
-    window.deltaX = 0.0;
-    window.deltaY = 0.0;
+    window.zoom = 1.0;
     window.pause = false;
     window.frColorR = eval("0x83") / 255.0;
     window.frColorG = eval("0x4d") / 255.0;
     window.frColorB = eval("0x18") / 255.0;
     window.brightness = 1.0;
-    window.amplitude = 1.0;
+    window.speed = 1.0;
     window.deltaPauseTime = 0;
+
+    window.isMndl = true;
+
+    window.mouse = {
+        x: 0,
+        y: 0,
+    
+        dx: 0,
+        dy: 0,
+    };
 
     const canvas = document.getElementById("glCanvas");
     const gl = canvas.getContext("webgl2");
@@ -79,10 +93,12 @@ function initGL() {
         out vec4 o_color;
         in vec3 color;
 
-        uniform float time, zoom, deltaX, deltaY, colorR, colorG, colorB, br, amp;
+        uniform float time, zoom, deltaX, deltaY, colorR, colorG, colorB, br, speed;
 
-        #define W 1000.0
-        #define H 1000.0
+        uniform bool isMndl;
+
+        #define W 800.0
+        #define H 800.0
 
         float cmplNorm2(vec2 z) {
             float n2;
@@ -138,10 +154,26 @@ function initGL() {
             vec2 z, c;
 
             z = vec2(x0 + (gl_FragCoord.x - deltaX) * (x1 - x0) / W, y0 + (gl_FragCoord.y - deltaY) * (y1 - y0) / H);
-            c = vec2(0.35 + 0.08 * sin((time + 3.0) / amp), 0.39 + 0.08 * sin(time / amp));
-            n = julia(z, c);
-            // n = mandelbrot(z);
-            o_color = vec4(vec3(colorR, colorG, colorB) * n * br, 1);
+            c = vec2(0.35 + 0.08 * sin((time + 3.0) * speed), 0.39 + 0.08 * sin(time * speed));
+
+            if (isMndl) {
+                n = mandelbrot(z);
+            } else {
+                n = julia(z, c);
+            }
+            vec4 col = vec4(vec3(colorR, colorG, colorB) * n * br, 1);
+
+            if (abs(gl_FragCoord.x - W / 2.0) < 1.0 || abs(gl_FragCoord.y - H / 2.0) < 1.0) {
+                if (gl_FragCoord.x > W / 2.0 - 10.0 && gl_FragCoord.x < W / 2.0 + 10.0 &&
+                    gl_FragCoord.y > H / 2.0 - 10.0 && gl_FragCoord.y < H / 2.0 + 10.0)
+                    o_color = vec4(1, 0, 0, 1);
+                else {
+                    o_color = col;
+                }
+            }
+            else {
+                o_color = col;
+            }
         }
     `;
 
@@ -162,33 +194,39 @@ function initGL() {
     const begin = Date.now();
     let timeFromStart;
 
-    const posBuf = gl.createBuffer();
+    const vbo = gl.createBuffer();
 
     const draw = () => {
-        gl.bindBuffer(gl.ARRAY_BUFFER, posBuf);
+        gl.bindBuffer(gl.ARRAY_BUFFER, vbo);
         const pos = [-1, 1, 0, -1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(pos), gl.STATIC_DRAW);
         gl.vertexAttribPointer(posLoc, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(posLoc);
         if (!window.pause)
-            timeFromStart = begin - window.deltaPauseTime - Date.now();
-        
-        const locs = ["time", "zoom", "deltaX", "deltaY", "colorR", "colorG", "colorB", "br", "amp"];
-        const uniforms = [timeFromStart / 1000.0, window.zoom, window.deltaX,
-                          window.deltaY, window.frColorR, window.frColorG,
-                          window.frColorB, window.brightness, window.amplitude];
+            timeFromStart = Date.now() - begin - window.deltaPauseTime;
+
+        const locs = ["time", "zoom", "deltaX", "deltaY", "colorR", "colorG", "colorB", "br", "speed"];
+        const uniforms = [timeFromStart / 1000.0, window.zoom, window.mouse.dx,
+                          -window.mouse.dy, window.frColorR, window.frColorG,
+                          window.frColorB, window.brightness, window.speed];
 
         for (let i = 0; i < locs.length; i++) {
             const loc = gl.getUniformLocation(shaderProgram, locs[i]);
 
-            if (loc != -1)
+            if (loc != null) {
                 gl.uniform1f(loc, uniforms[i]);
-            
+            }
         }
+
+        gl.uniform1i(gl.getUniformLocation(shaderProgram, "isMndl"), window.isMndl);
 
         gl.useProgram(shaderProgram);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 5);
+
+        colorHandle();
+        brightnessHandle();
+        speedHandle();
 
         window.requestAnimationFrame(draw);
     }
