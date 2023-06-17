@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <head>
+        <title>nkgl_model</title>
+    </head>
+    <body>
+        <p class="fps" id="fpsText"></p>
+        <canvas id="glCanvas" width="1000px" height="500px"></canvas>
+        <script type="module">
+            import { initGL } from "./render.js";
+            
+            window.addEventListener("load", () => {
+                // window.currentFigure = "tetra";
+                // window.axis = window.grid = window.cow = false;
+                initGL("glCanvas");
+            });
+        </script>
+    </body>
+</html>
