@@ -1,0 +1,28 @@
+body {
+    background-color: black;
+    overflow: hidden;
+}
+
+table {
+    font-size: 30px;
+    font-family: "Wide Latin";
+    text-align: center;
+}
+
+th {
+    background-color: darkgreen;
+}
+
+input {
+    transform: scaleX(2);
+}
+
+.canvas2d {
+    background-color: #834d18;
+}
+
+.fps {
+    font-size: 30px;
+    font-family: "Cooper Black";
+    color: #834d18;
+}
