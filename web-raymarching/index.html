@@ -1,0 +1,80 @@
+<!-- Koptelov Nikita, 10-1, 05.06.2024 */ -->
+
+<!DOCTYPE html>
+<head>
+  <script src="./output/main.js"></script>
+  <link rel="stylesheet" type="text/css" href="index.css"/>
+  <title>NK1 Ray Marching</title>
+</head>
+
+<body class="someBody">
+  <!--<h1>  CGSG'SummerPractice'2024::NK1::2024-06-05</h1>-->
+  <h1 id="fps">NK1 Ray Marching; FPS: 3047.102</h1>
+  <!--
+  <textarea id="vertexCode" rows="20" cols="70"></textarea>
+  <textarea id="fragmentCode" rows="20" cols="70"></textarea>
+  <button id="shadersReload">Shaders reload</button>
+  <br>
+  -->
+  <div id="shapeSelectDiv" class="flexDiv">
+    <nobr class="bigText">Current scene&nbsp;&nbsp;&nbsp;</nobr>
+    <select id="shapeSelect1" class="bigText">
+      <!--
+      <option>Sphere</option>
+      <option>Plane</option>
+      <option>Cube</option>
+      <option>Cylinder</option>
+      <option>Triangle</option>
+      -->
+      <option id="new">new...</option>
+    </select>
+  </div>
+  <br>
+  <div>
+    <p class="helpText" id="helpText">To create a new shape, enter the <i>Current scene</i> block and select "new...".
+      To edit the shape, you need to choose it in the <i>Current scene</i> block, enter some colors and the data into <i>shape data field</i> (see the template in <i>Shape templates</i> detail block)</p>
+  </div>
+
+  <p class="bigText" id="shapeSelectText"></p>
+  <nobr><i>Shape data field</i> is here &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;--></nobr>
+  <input id="shapeEditInput" type="text" style="font-family:Comic Sans MS; font-size:20px">
+  <button id="shapeEditButton" class="bigText">Shape edit/create</button>
+  <button id="shapeDeleteButton" class="bigText">Shape delete</button>
+  <input type="color" id="ambientPicker" value="#184d83"><nobr>&nbsp;Ambient</nobr>
+  <input type="color" id="diffusePicker" value="#184d83"><nobr>&nbsp;Diffuse</nobr>
+  <input type="color" id="specularPicker" value="#184d83"><nobr>&nbsp;Specular</nobr>
+  <input type="range" id="transPicker" class="mySlider" value="0" min="0.0" max="1.0" step="0.1"><nobr>&nbsp;Transparency</nobr>
+  <input type="range" id="phongPicker" class="mySlider" value="26.7" min="0.1" max="50" step="0.1"><nobr>&nbsp;Phong</nobr>
+  <!--<input type="checkbox" id="planeCheckerButton" checked>
+  <nobr>Plane checker</nobr>-->
+
+  <br><br>
+
+  <nobr>Input scene name to save or overwrite it! --&gt;</nobr>
+  <input id="sceneNameInput" type="text" style="font-family:Comic Sans MS; font-size:20px">
+  <button id="sceneSaveButton" class="bigText">Save</button>
+  <select id="sceneSelect" class="bigText">
+  </select>
+  <nobr>&lt;-- Here is a scene load list!</nobr>
+
+  <br><br>
+
+  <div class="flexDiv">
+    <canvas id="glCanvas" width="1000" height="666"></canvas>
+    <table id="table1" class="table1" border="1" style="width:20%">
+      <tr>
+        <th class="header1">Vertex</th>
+        <th class="header1">Fragment</th>
+      </tr>
+      <tr>
+        <td width="50%" bgcolor="yellow">Compiling...</th>
+        <td width="50%" bgcolor="yellow">Compiling...</th>
+      </tr>
+    </table>
+
+  <details open="true" class="arialFont"><summary>Shape templates</summary><p id="shapeTemplates" class="helpText"></p></details>
+  &nbsp;
+  <details class="arialFont"><summary>Shader log</summary><p id="shaderLog"></p></details>
+  </div>
+</body>
